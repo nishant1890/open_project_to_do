@@ -1,0 +1,38 @@
+
+<% translations = {
+    "h" => 'hours',
+    "d" => 'days',
+    "w" => 'weeks',
+    "m" => 'months'
+  } 
+%>
+<table class="table table-bordered">
+  <tbody>
+    <thead>
+      <tr>
+        <td></td>
+        <td>#</td>
+        <td></td>
+        <td>To Do</td>
+        <td>Work</td>
+        <td>Duration</td>
+        <td>Start / End</td>
+        <td>Assigned To</td>
+        <td>Pred.</td>
+      </tr>
+    </thead>
+    <% @work_package_todos.each do |todo| %>
+      <tr>
+        <td><%= image_tag('https://image.freepik.com/free-icon/align-justify_318-41697.png', style: 'height: 25px;') %></td>
+        <td><%= todo.id %></td>
+        <td><%= image_tag((todo.finished? ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Green_tick_pointed.svg/1024px-Green_tick_pointed.svg.png' : 'http://www.clker.com/cliparts/1/1/9/2/12065738771352376078Arnoud999_Right_or_wrong_5.svg.hi.png'), style: 'height: 25px;') %></td>
+        <td><%= todo.text %></td>
+        <td><%= "#{todo.work} #{todo.work_unit}" %></td>
+        <td><%= "#{todo.duration} #{todo.duration_unit}" %></td>
+        <td><%= "#{todo.created_at.to_date} / #{(todo.created_at + todo.duration.send(translations[todo])).to_date if todo.duration.present? }" %></td>
+        <td><%= todo.assignee_id %></td>
+        <td><%= todo.line_id %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
