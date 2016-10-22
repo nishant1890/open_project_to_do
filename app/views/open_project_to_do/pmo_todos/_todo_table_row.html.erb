@@ -1,0 +1,32 @@
+<tr class="todo-<%= todo.id %>">
+  <td><%= image_tag('https://image.freepik.com/free-icon/align-justify_318-41697.png', style: 'height: 25px;') %></td>
+  <td><%= todo.id %></td>
+  <td><%= image_tag((todo.finished? ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Green_tick_pointed.svg/1024px-Green_tick_pointed.svg.png' : 'http://www.clker.com/cliparts/1/1/9/2/12065738771352376078Arnoud999_Right_or_wrong_5.svg.hi.png'), style: 'height: 25px;') %></td>
+  <td><%= todo.text %></td>
+  <td><%= "#{todo.work} #{todo.work_unit}" %></td>
+  <td><%= "#{todo.duration} #{todo.duration_unit.try(:downcase)}" %></td>
+  <td><%= "#{todo.created_at.to_date} / #{(todo.created_at + todo.duration.to_i.send(todo.duration_unit.try(:downcase))).to_date if todo.duration.present? }" %></td>
+  <td><%= todo.assignee.name %></td>
+  <td><%= todo.line_id %></td>
+  <td><%= link_to 'Delete', open_project_to_do.destroy_todo_path(todo.id), method: 'delete', data: { confirm: 'Are you sure?' }, remote: true %></td>
+</tr>
+
+<!-- <div class="todo-options contextmenu-<%= todo.id %>">
+  <ul class="list">
+    <li>Delete</li>  
+  </ul>
+</div>
+
+<script type="text/javascript">
+  jQuery('.contextmenu-<%= todo.id %>>').hide().removeAttr( 'style' );
+
+  jQuery('.todo-<%= todo.id %>').bind("contextmenu", function (event) {
+
+    // Avoid the real one
+    event.preventDefault();
+    $(".contextmenu-<%= todo.id %>").toggle(100).css({
+      top: event.pageY + "px",
+      left: event.pageX + "px"
+    });
+  });
+</script> -->

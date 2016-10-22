@@ -19,8 +19,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 4.2.7.1"
 
-  s.add_dependency "rabl"
+  s.add_dependency 'pry'
   s.add_dependency 'jquery-ui-rails'
-  s.add_development_dependency "sqlite3"
+  s.add_dependency 'mysql2'
 
 end

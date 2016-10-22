@@ -11,5 +11,4 @@
 // about supported directives.
 //
 //= require_tree .
-//= require jquery
-//= require jquery-ui/sortable
+// require jquery

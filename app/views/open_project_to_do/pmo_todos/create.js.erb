@@ -1,0 +1,3 @@
+jQuery('#todo-table').append('<%= j render partial: "open_project_to_do/pmo_todos/todo_table_row", locals: {todo: @pmo_todo} %>'); 
+jQuery('.notification-box').show().html('Todo has been created successfully');
+jQuery('#new-todo').find("input[type!=submit]").val("");

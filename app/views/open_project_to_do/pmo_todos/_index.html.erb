@@ -1,38 +1,133 @@
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-<% translations = {
-    "h" => 'hours',
-    "d" => 'days',
-    "w" => 'weeks',
-    "m" => 'months'
-  } 
-%>
-<table class="table table-bordered">
+
+<% if params[:controller] == 'work_packages' && params[:action] == 'show' %>
+
+<style type="text/css">
+  table#todo-table{
+    width: 100%;
+  }
+
+  .green-buttun{
+    background: #35c53f;
+    color: white;
+    border-color: #35c53f;
+  }
+
+  .notification-box{
+    background-color: #d8fdd1;
+    border-color: #35c53f;
+    padding: 0.625rem 2.1875rem 0.625rem 2.1875rem;
+    margin-bottom: 0.1875rem;
+    color: #333;
+    background: #e3f5ff;
+    padding: 0.625rem;
+    border-radius: 0.125rem;
+    box-shadow: 0.0625rem 0.125rem 0.1875rem #dddddd;
+    border: 0.0625rem solid #8fc0db;
+    
+  }
+
+  /*.todo-options { position:relative }
+  .todo-options .field {
+    width:300px; background:#EC6603; color:#fff; padding:5px; border:none; cursor:pointer;
+    font-family:'lucida sans unicode',sans-serif; font-size:1em;
+    border:solid 1px #EC6603;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+  }
+  .todo-options .field:hover {
+    border:solid 1px #fff;
+    -moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999
+  }
+  .todo-options>ul.list { 
+    position:absolute; left:30px; top:-30px; z-index:999;
+    width:300px;
+    margin:0; padding:10px; list-style:none;
+    background:#fff; color:#333;
+    -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
+    -moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999
+  }
+  .todo-options>ul.list li {
+    border-bottom: solid 1px #ccc;
+    list-style: none;
+  }
+  .todo-options>ul.list li:hover {
+    background:#00558b; color:#fff;
+  }
+  .todo-options>ul.list li:last-child { border:none }*/
+
+</style>
+<br />
+
+<div class="notification-box">
+</div>  
+<table class="table table-bordered" id="todo-table">
+  <thead>
+    <tr>
+      <td></td>
+      <td>#</td>
+      <td></td>
+      <td>To Do</td>
+      <td>Work</td>
+      <td>Duration</td>
+      <td>Start / End</td>
+      <td>Assigned To</td>
+      <td>Pred.</td>
+      <td></td>
+    </tr>
+  </thead>
   <tbody>
-    <thead>
-      <tr>
-        <td></td>
-        <td>#</td>
-        <td></td>
-        <td>To Do</td>
-        <td>Work</td>
-        <td>Duration</td>
-        <td>Start / End</td>
-        <td>Assigned To</td>
-        <td>Pred.</td>
-      </tr>
-    </thead>
     <% @work_package_todos.each do |todo| %>
-      <tr>
-        <td><%= image_tag('https://image.freepik.com/free-icon/align-justify_318-41697.png', style: 'height: 25px;') %></td>
-        <td><%= todo.id %></td>
-        <td><%= image_tag((todo.finished? ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Green_tick_pointed.svg/1024px-Green_tick_pointed.svg.png' : 'http://www.clker.com/cliparts/1/1/9/2/12065738771352376078Arnoud999_Right_or_wrong_5.svg.hi.png'), style: 'height: 25px;') %></td>
-        <td><%= todo.text %></td>
-        <td><%= "#{todo.work} #{todo.work_unit}" %></td>
-        <td><%= "#{todo.duration} #{todo.duration_unit}" %></td>
-        <td><%= "#{todo.created_at.to_date} / #{(todo.created_at + todo.duration.send(translations[todo])).to_date if todo.duration.present? }" %></td>
-        <td><%= todo.assignee_id %></td>
-        <td><%= todo.line_id %></td>
-      </tr>
+      <%= render partial: 'open_project_to_do/pmo_todos/todo_table_row', locals: {todo: todo} %>
     <% end %>
   </tbody>
 </table>
+
+
+
+<h3>New Todo</h3>
+<%= form_tag(open_project_to_do.create_todos_url, method: 'post', remote: true, id: 'new-todo') %>
+  <%= text_field_tag 'todos[text]', '', placeholder: 'To do' %>
+  <br />
+  <%= number_field_tag 'todos[work]', '', placeholder: 'Work', style: 'width: 25%; float: left;' %>
+  <%= select_tag 'todos[work_unit]', options_for_select(['Hours', 'Days', 'Weeks', 'Months']), include_blank: 'Work Unit', style: 'width: 73.5%; float: left; margin-left: 10px;' %>
+  <br /><br />
+  <%= number_field_tag 'todos[duration]', '', placeholder: 'Duration', style: 'width: 25%; float: left;' %>
+  <%= select_tag 'todos[duration_unit]', options_for_select(['Hours', 'Days', 'Weeks', 'Months']), include_blank: 'Duration Unit', style: 'width: 73.5%; float: left; margin-left: 10px;' %>
+  <br /><br />
+  
+  <%= select_tag 'todos[assignee_id]', options_from_collection_for_select(User.all, "id", "firstname") %>
+  <%= hidden_field_tag 'todos[work_package_id]', @work_package.id %>
+  <%= hidden_field_tag 'todos[line_id]', (@work_package_todos.last.try(:line_id) || 0 + 1) %>
+  
+  <br />
+  <%= submit_tag 'Submit', class: 'green-buttun' %> 
+<% end %>
+
+<script type="text/javascript">
+  
+  jQuery('.notification-box').hide();
+
+  var fixHelper = function(e, ui) {
+    ui.children().each(function() {
+      
+    });
+    return ui;
+  };
+
+  jQuery("#todo-table tbody").sortable({
+    helper: fixHelper
+  }).disableSelection();
+
+
+  function toggleDiv() {
+    setTimeout(function () {
+      $(".notification-box").hide();
+    
+    }, 10000);
+  }
+  toggleDiv();
+</script>
