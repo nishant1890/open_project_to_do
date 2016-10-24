@@ -11,7 +11,6 @@
 <tr class="todo-<%= todo.id %> todo-row" data-todo-id="<%= todo.id %>">
   
 
-  <td><p><%= image_tag(jsutify_image, style: 'height: 25px;') %></p></td>
   <td><p><%= todo.id %></p></td>
   <td><%= form_for(todo, url: open_project_to_do.update_todo_url(todo.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
     <p><%= image_tag((todo.finished? ? tick_image : cross_image ), style: 'height: 25px;', class: "todo-finished-#{todo.id}", onclick: "toggleCellContent('todo-finished-#{todo.id}', 'todo-finished-field-#{todo.id}')") %></p>

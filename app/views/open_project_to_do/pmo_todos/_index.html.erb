@@ -35,16 +35,15 @@
 <table class="table table-bordered" id="todo-table">
   <thead>
     <tr>
-      <td></td>
-      <td>#</td>
-      <td></td>
-      <td>To Do</td>
-      <td>Work</td>
-      <td>Duration</td>
-      <td>Start / End</td>
-      <td>Assigned To</td>
-      <td>Pred.</td>
-      <td></td>
+      <td width="10%">#</td>
+      <td width="10%"></td>
+      <td width="20%">To Do</td>
+      <td width="10%">Work</td>
+      <td width="10%">Duration</td>
+      <td width="10%">Start / End</td>
+      <td width="10%">Assigned To</td>
+      <td width="10%">Pred.</td>
+      <td width="10%"></td>
     </tr>
   </thead>
   <tbody>
@@ -53,23 +52,6 @@
     <% end %>
   </tbody>
 </table>
-
-<script type="text/javascript">
-
-  function updateTodoOrder(){
-    var data = new Array();
-    jQuery("tr.todo-row").each(function(){
-    if(jQuery.inArray(jQuery(this).attr("data-todo-id")) == -1) // check if not in array
-       data.push(jQuery(this).attr("data-todo-id"))
-    })
-    alert(data)
-  }
-  jQuery("#todo-table tbody").sortable(function(){
-    change: updateTodoOrder()
-  })
-  
-
-</script>
 
 <h3>New Todo</h3>
 <%= form_tag(open_project_to_do.create_todo_url, method: 'post', id: 'new-todo') %>
