@@ -30,40 +30,8 @@
     
   }
 
-  /*.todo-options { position:relative }
-  .todo-options .field {
-    width:300px; background:#EC6603; color:#fff; padding:5px; border:none; cursor:pointer;
-    font-family:'lucida sans unicode',sans-serif; font-size:1em;
-    border:solid 1px #EC6603;
-    -webkit-transition: all .4s ease-in-out;
-    transition: all .4s ease-in-out;
-  }
-  .todo-options .field:hover {
-    border:solid 1px #fff;
-    -moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999
-  }
-  .todo-options>ul.list { 
-    position:absolute; left:30px; top:-30px; z-index:999;
-    width:300px;
-    margin:0; padding:10px; list-style:none;
-    background:#fff; color:#333;
-    -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
-    -moz-box-shadow:0 0 5px #999; -webkit-box-shadow:0 0 5px #999; box-shadow:0 0 5px #999
-  }
-  .todo-options>ul.list li {
-    border-bottom: solid 1px #ccc;
-    list-style: none;
-  }
-  .todo-options>ul.list li:hover {
-    background:#00558b; color:#fff;
-  }
-  .todo-options>ul.list li:last-child { border:none }*/
-
 </style>
 <br />
-
-<div class="notification-box">
-</div>  
 <table class="table table-bordered" id="todo-table">
   <thead>
     <tr>
@@ -86,48 +54,39 @@
   </tbody>
 </table>
 
+<script type="text/javascript">
 
+  function updateTodoOrder(){
+    var data = new Array();
+    jQuery("tr.todo-row").each(function(){
+    if(jQuery.inArray(jQuery(this).attr("data-todo-id")) == -1) // check if not in array
+       data.push(jQuery(this).attr("data-todo-id"))
+    })
+    alert(data)
+  }
+  jQuery("#todo-table tbody").sortable(function(){
+    change: updateTodoOrder()
+  })
+  
+
+</script>
 
 <h3>New Todo</h3>
-<%= form_tag(open_project_to_do.create_todos_url, method: 'post', remote: true, id: 'new-todo') %>
-  <%= text_field_tag 'todos[text]', '', placeholder: 'To do' %>
+<%= form_tag(open_project_to_do.create_todo_url, method: 'post', id: 'new-todo') %>
+  <%= text_field_tag 'pmo_todo[text]', '', placeholder: 'To do' %>
   <br />
-  <%= number_field_tag 'todos[work]', '', placeholder: 'Work', style: 'width: 25%; float: left;' %>
-  <%= select_tag 'todos[work_unit]', options_for_select(['Hours', 'Days', 'Weeks', 'Months']), include_blank: 'Work Unit', style: 'width: 73.5%; float: left; margin-left: 10px;' %>
+  <%= number_field_tag 'pmo_todo[work]', '', placeholder: 'Work', style: 'width: 25%; float: left;' %>
+  <%= select_tag 'pmo_todo[work_unit]', options_for_select(['Hours', 'Days', 'Weeks', 'Months']), include_blank: 'Work Unit', style: 'width: 73.5%; float: left; margin-left: 10px;' %>
   <br /><br />
-  <%= number_field_tag 'todos[duration]', '', placeholder: 'Duration', style: 'width: 25%; float: left;' %>
-  <%= select_tag 'todos[duration_unit]', options_for_select(['Hours', 'Days', 'Weeks', 'Months']), include_blank: 'Duration Unit', style: 'width: 73.5%; float: left; margin-left: 10px;' %>
+  <%= number_field_tag 'pmo_todo[duration]', '', placeholder: 'Duration', style: 'width: 25%; float: left;' %>
+  <%= select_tag 'pmo_todo[duration_unit]', options_for_select(['Hours', 'Days', 'Weeks', 'Months']), include_blank: 'Duration Unit', style: 'width: 73.5%; float: left; margin-left: 10px;' %>
   <br /><br />
   
-  <%= select_tag 'todos[assignee_id]', options_from_collection_for_select(User.all, "id", "firstname") %>
-  <%= hidden_field_tag 'todos[work_package_id]', @work_package.id %>
-  <%= hidden_field_tag 'todos[line_id]', (@work_package_todos.last.try(:line_id) || 0 + 1) %>
+  <%= select_tag 'pmo_todo[assignee_id]', options_from_collection_for_select(User.all, "id", "name") %>
+  <%= hidden_field_tag 'pmo_todo[work_package_id]', @work_package.id %>
+  <%= hidden_field_tag 'pmo_todo[line_id]', (@work_package_todos.last.present? ? (@work_package_todos.last.line_id.to_i + 1) : 0 + 1) %>
   
   <br />
   <%= submit_tag 'Submit', class: 'green-buttun' %> 
 <% end %>
 
-<script type="text/javascript">
-  
-  jQuery('.notification-box').hide();
-
-  var fixHelper = function(e, ui) {
-    ui.children().each(function() {
-      
-    });
-    return ui;
-  };
-
-  jQuery("#todo-table tbody").sortable({
-    helper: fixHelper
-  }).disableSelection();
-
-
-  function toggleDiv() {
-    setTimeout(function () {
-      $(".notification-box").hide();
-    
-    }, 10000);
-  }
-  toggleDiv();
-</script>

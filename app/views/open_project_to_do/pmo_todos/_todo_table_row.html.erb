@@ -1,32 +1,126 @@
-<tr class="todo-<%= todo.id %>">
-  <td><%= image_tag('https://image.freepik.com/free-icon/align-justify_318-41697.png', style: 'height: 25px;') %></td>
-  <td><%= todo.id %></td>
-  <td><%= image_tag((todo.finished? ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Green_tick_pointed.svg/1024px-Green_tick_pointed.svg.png' : 'http://www.clker.com/cliparts/1/1/9/2/12065738771352376078Arnoud999_Right_or_wrong_5.svg.hi.png'), style: 'height: 25px;') %></td>
-  <td><%= todo.text %></td>
-  <td><%= "#{todo.work} #{todo.work_unit}" %></td>
-  <td><%= "#{todo.duration} #{todo.duration_unit.try(:downcase)}" %></td>
-  <td><%= "#{todo.created_at.to_date} / #{(todo.created_at + todo.duration.to_i.send(todo.duration_unit.try(:downcase))).to_date if todo.duration.present? }" %></td>
-  <td><%= todo.assignee.name %></td>
-  <td><%= todo.line_id %></td>
-  <td><%= link_to 'Delete', open_project_to_do.destroy_todo_path(todo.id), method: 'delete', data: { confirm: 'Are you sure?' }, remote: true %></td>
+<% jsutify_image = 'https://maxcdn.icons8.com/iOS7/PNG/25/Editing/align_justify_filled-25.png' %>
+<% tick_image = 'https://maxcdn.icons8.com/Color/PNG/24/Very_Basic/checkmark-24.png' %>
+<% cross_image = 'https://maxcdn.icons8.com/Color/PNG/24/User_Interface/delete_sign-24.png' %>
+<% dustbin_image = 'https://maxcdn.icons8.com/iOS7/PNG/25/Very_Basic/empty_trash_filled-25.png' %>
+<style type="text/css">
+  .todo-row td{
+    padding: 5px !important;
+    
+  }
+</style>
+<tr class="todo-<%= todo.id %> todo-row" data-todo-id="<%= todo.id %>">
+  
+
+  <td><p><%= image_tag(jsutify_image, style: 'height: 25px;') %></p></td>
+  <td><p><%= todo.id %></p></td>
+  <td><%= form_for(todo, url: open_project_to_do.update_todo_url(todo.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
+    <p><%= image_tag((todo.finished? ? tick_image : cross_image ), style: 'height: 25px;', class: "todo-finished-#{todo.id}", onclick: "toggleCellContent('todo-finished-#{todo.id}', 'todo-finished-field-#{todo.id}')") %></p>
+    
+    <p class="todo-finished-field-<%= todo.id%>">
+      <%= f.select :finished, options_for_select([true, false], todo.finished?) %>
+      <br />
+      
+      <%= f.submit 'Submit', onlclick: "jQuery(this).closest('form').submit();" %>
+      <%= link_to "Cancel", '#', onclick: "toggleCellContent('todo-finished-#{todo.id}', 'todo-finished-field-#{todo.id}', 'todo-finished-cancel-#{todo.id}')", remote: true  %>
+    </p>
+    <% end %>
+  </td>
+
+  <td>
+    <%= form_for(todo, url: open_project_to_do.update_todo_url(todo.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
+      <p class="todo-text-<%= todo.id %>" onclick="toggleCellContent('todo-text-<%= todo.id %>', 'todo-text-field-<%= todo.id %>')">
+        <%= todo.text %>
+      </p>
+
+      <p class="todo-text-field-<%= todo.id%>">
+        <%= f.text_field :text, placeholder: 'To do' %>
+        <br />
+        
+        <%= f.submit 'Submit', onlclick: "jQuery(this).closest('form').submit();" %>
+        <%= link_to "Cancel", '#', onclick: "toggleCellContent('todo-text-#{todo.id}', 'todo-text-field-#{todo.id}')", remote: true  %></p>
+      </p>
+    <% end %>
+  </td>
+
+  <td>
+    <%= form_for(todo, url: open_project_to_do.update_todo_url(todo.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
+      <p class="todo-work-<%= todo.id %>" onclick="toggleCellContent('todo-work-<%= todo.id %>', 'todo-work-field-<%= todo.id %>')">
+        <%= "#{todo.work} #{todo.work_unit}" %>
+      </p>
+
+      <p class="todo-work-field-<%= todo.id%>">
+        <%= f.number_field :work, placeholder: 'Work'%>
+        <%= f.select :work_unit, options_for_select(['Hours', 'Days', 'Weeks', 'Months'], todo.work_unit), include_blank: 'Work Unit' %>
+        <br />
+        
+        <%= f.submit 'Submit', onlclick: "jQuery(this).closest('form').submit();" %>
+        <%= link_to "Cancel", '#', onclick: "toggleCellContent('todo-work-#{todo.id}', 'todo-work-field-#{todo.id}')", remote: true %>
+      </p>
+    <% end %>
+  </td>
+  <td>
+    <%= form_for(todo, url: open_project_to_do.update_todo_url(todo.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
+      <p class="todo-duration-<%= todo.id %>" onclick="toggleCellContent('todo-duration-<%= todo.id %>', 'todo-duration-field-<%= todo.id %>')">
+        <%= "#{todo.duration} #{todo.duration_unit}" %>
+      </p>
+
+      <p class="todo-duration-field-<%= todo.id%>">
+        <%= f.number_field :duration, placeholder: 'Duration'%>
+        <%= f.select :duration_unit, options_for_select(['Hours', 'Days', 'Weeks', 'Months'], todo.duration_unit), include_blank: 'Duration Unit' %>
+        <br />
+        
+        <%= f.submit 'Submit', onlclick: "jQuery(this).closest('form').submit();" %>
+          <%= link_to "Cancel", '#', onclick: "toggleCellContent('todo-duration-#{todo.id}', 'todo-duration-field-#{todo.id}')", remote: true %>
+      </p>
+    <% end %>
+  </td>
+  <td>
+    <%= "#{todo.created_at.to_date} / #{(todo.created_at + todo.duration.to_i.send(todo.duration_unit.try(:downcase))).to_date if todo.duration.present? }" %>
+    </p>
+  </td>
+  <td>
+    <%= form_for(todo, url: open_project_to_do.update_todo_url(todo.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
+      <p class="todo-assigned-to-<%= todo.id %>" onclick="toggleCellContent('todo-assigned-to-<%= todo.id %>', 'todo-assigned-to-field-<%= todo.id%>')">
+        <%= todo.assignee.name %>
+      </p>
+
+      <p class="todo-assigned-to-field-<%= todo.id%>">
+        <%= f.select :assignee_id, options_from_collection_for_select(User.all, "id", "name", todo.assignee_id) %>
+        <br />
+        
+        <%= f.submit 'Submit', onlclick: "jQuery(this).closest('form').submit();" %>
+          <%= link_to "Cancel", '#', onclick: "toggleCellContent('todo-assigned-to-#{todo.id}', 'todo-assigned-to-field-#{todo.id}')", remote: true %>
+      </p>
+    <% end %>
+  </td>
+  <td>
+    <%= form_for(todo, url: open_project_to_do.update_todos_order_url(work_pack: @work_package.id), mehod: 'post', id: "update-todo-#{todo.id}") do |f| %>
+      <p class="todo-line-id-<%= todo.id %>" onclick="toggleCellContent('todo-line-id-<%= todo.id %>', 'todo-line-id-field-<%= todo.id%>')">
+        <%= todo.line_id %>
+      </p>
+
+      <p class="todo-line-id-field-<%= todo.id%>">
+        <%= f.select :line_id, options_for_select(@work_package_todos.map(&:line_id), todo.line_id) %>
+        <br />
+        <%= hidden_field_tag 'pmo_todo[todo_id]', todo.id %>
+        <%= f.submit 'Submit', onlclick: "jQuery(this).closest('form').submit();" %>
+        <%= link_to "Cancel", '#', onclick: "toggleCellContent('todo-line-id-#{todo.id}', 'todo-line-id-field-#{todo.id}')", remote: true %>
+      </p>
+    <% end %>
+  </td>
+  <td><%= link_to image_tag(dustbin_image), open_project_to_do.destroy_todo_path(todo.id), method: 'delete', data: { confirm: 'Are you sure?' } %></td>
 </tr>
 
-<!-- <div class="todo-options contextmenu-<%= todo.id %>">
-  <ul class="list">
-    <li>Delete</li>  
-  </ul>
-</div>
-
 <script type="text/javascript">
-  jQuery('.contextmenu-<%= todo.id %>>').hide().removeAttr( 'style' );
+  jQuery('.todo-text-field-<%= todo.id%>').hide()
+  jQuery('.todo-finished-field-<%= todo.id%>').hide()
+  jQuery('.todo-work-field-<%= todo.id%>').hide()
+  jQuery('.todo-duration-field-<%= todo.id%>').hide()
+  jQuery('.todo-assigned-to-field-<%= todo.id%>').hide()
+  jQuery('.todo-line-id-field-<%= todo.id%>').hide()
 
-  jQuery('.todo-<%= todo.id %>').bind("contextmenu", function (event) {
-
-    // Avoid the real one
-    event.preventDefault();
-    $(".contextmenu-<%= todo.id %>").toggle(100).css({
-      top: event.pageY + "px",
-      left: event.pageX + "px"
-    });
-  });
-</script> -->
+  function toggleCellContent(cellContent, cellField) {
+    $('.' + cellContent).toggle()
+    $('.' + cellField).toggle()
+  }
+</script>
